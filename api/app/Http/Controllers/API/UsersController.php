@@ -5,20 +5,22 @@ namespace App\Http\Controllers\API;
 use App\Client\WeatherDataClientInterface;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\Cache\Repository;
 
 class UsersController extends Controller
 {
     private const CACHE_NAME = 'users-list';
 
-    public function __construct(private WeatherDataClientInterface $client)
-    {
+    public function __construct(
+        private Repository $cache,
+        private WeatherDataClientInterface $client
+    ){
     }
 
     public function index()
     {
-        if (Cache::has(self::CACHE_NAME)) {
-            return response()->json(['users' => Cache::get(self::CACHE_NAME)]);
+        if ($this->cache->has(self::CACHE_NAME)) {
+            return response()->json(['users' => $this->cache->get(self::CACHE_NAME)]);
         }
         $users = User::query()->select(['id', 'name', 'email', 'latitude', 'longitude'])
             ->cursor()
@@ -31,7 +33,7 @@ class UsersController extends Controller
             $usersList[] = $user;
         }
 
-        Cache::put(self::CACHE_NAME, $usersList, 600);
+        $this->cache->put(self::CACHE_NAME, $usersList, 600);
         return \response()->json(['users' => $usersList]);
     }
 }

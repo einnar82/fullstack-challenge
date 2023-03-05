@@ -2,25 +2,24 @@
 
 namespace App\Client;
 
-use GuzzleHttp\Exception\ConnectException;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class OpenWeatherClient implements WeatherDataClientInterface
 {
-    public function __construct(private PendingRequest $openWeatherClient)
-    {
+    public function __construct(
+        private PendingRequest $openWeatherClient,
+        private Repository $cache
+    ) {
     }
 
     public function getCurrentWeatherData(string $lat,string $lon): array
     {
         $cacheName =  $this->cacheName($lat,$lon);
 
-        if (Cache::has($cacheName)) {
-            return Cache::get($cacheName);
+        if ($this->cache->has($cacheName)) {
+            return $this->cache->get($cacheName);
         }
 
         $response =  $this->request()->get('2.5/weather', [
@@ -30,7 +29,7 @@ class OpenWeatherClient implements WeatherDataClientInterface
             'units' => 'metric'
         ]);
 
-        Cache::put($cacheName, $response->json(), 600);
+        $this->cache->put($cacheName, $response->json(), 600);
         return $response->json();
     }
 
@@ -42,6 +41,8 @@ class OpenWeatherClient implements WeatherDataClientInterface
     private function request(): PendingRequest
     {
         return $this->openWeatherClient
-            ->baseUrl(\config('services.openweather.base_url'));
+            ->withOptions([
+                'base_uri' => \config('services.openweather.base_url')
+            ]);
     }
 }
