@@ -1,9 +1,22 @@
 <script setup lang="ts">
-import ApiTest from "@/components/ApiTest.vue";
+import {RouterView} from "vue-router";
+import {onMounted} from 'vue'
+import {initDrawers} from 'flowbite';
+import {useUsers} from "@/store/users";
+import Sidebar from "@/views/Sidebar.vue";
+
+const store = useUsers();
+
+onMounted(() => {
+  initDrawers();
+  store.fetchUsers();
+})
 </script>
 
 <template>
   <main>
-    <api-test></api-test>
+    <Sidebar>
+      <RouterView></RouterView>
+    </Sidebar>
   </main>
 </template>
