@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\OpenweatherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,11 +15,4 @@ use App\Http\Controllers\API\OpenweatherController;
 |
 */
 
-Route::get('/', function () {
-    return response()->json([
-        'message' => 'all systems are a go',
-        'users' => \App\Models\User::all(),
-    ]);
-});
-
-Route::get('/weather/current', [OpenweatherController::class, 'getCurrentWeatherData']);
+Route::get('/', [UsersController::class, 'index']);

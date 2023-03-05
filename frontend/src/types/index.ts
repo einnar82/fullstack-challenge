@@ -5,6 +5,6 @@ export interface User {
     email_verified_at: string,
     latitude: string,
     longitude:string,
-    created_at: string,
-    updated_at: string
+    created_at?: string,
+    updated_at?: string
 }

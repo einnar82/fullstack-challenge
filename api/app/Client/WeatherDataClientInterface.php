@@ -7,5 +7,5 @@ use Illuminate\Http\Request;
 
 interface WeatherDataClientInterface
 {
-    public function getCurrentWeatherData(Request $request): JsonResponse;
+    public function getCurrentWeatherData(string $lat, string $lon): array;
 }
