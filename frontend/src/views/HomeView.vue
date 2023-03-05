@@ -3,7 +3,7 @@ import {RouterView} from "vue-router";
 import {onMounted} from 'vue'
 import {initDrawers} from 'flowbite';
 import {useUsers} from "@/store/users";
-import Sidebar from "@/views/Sidebar.vue";
+import Sidebar from "@/components/Sidebar.vue";
 
 const store = useUsers();
 
